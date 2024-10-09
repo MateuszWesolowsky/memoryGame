@@ -1,11 +1,7 @@
+import Card from './components/Card/Card';
 import './components/Card/Card.scss';
 import { useState } from 'react';
-
-interface CardType {
-  src: string;
-  isMatched: boolean;
-  id: string;
-}
+import { CardType } from './types/types';
 
 const initialCards: CardType[] = [
   { src: '/img/html.png', isMatched: false, id: 'htmlId1' },

@@ -1,0 +1,12 @@
+.card {
+  position: relative;
+}
+
+img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: block;
+  border: 2px solid gray;
+  border-radius: 5px;
+  object-fit: cover;
+}
