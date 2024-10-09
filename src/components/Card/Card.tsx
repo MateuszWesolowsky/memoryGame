@@ -2,12 +2,12 @@ import { CardType } from '../../types/types';
 import './Card.scss';
 
 interface CardProps {
-  card: CardType;
+  card: CardType; // Używamy zaimportowanego typu
+  handleChoice: (card: CardType) => void; // Funkcja do obsługi wyboru
 }
-
-const Card = ({ card }: CardProps) => {
+const Card = ({ card, handleChoice }: CardProps) => {
   const handleClick = () => {
-    console.log(card);
+    handleChoice(card);
   };
 
   return (
