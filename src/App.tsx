@@ -1,5 +1,5 @@
 import Card from './components/Card/Card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CardType } from './types/types';
 import './scss/main.scss';
 
@@ -26,10 +26,12 @@ const App = () => {
   const [cards, setCards] = useState<CardType[]>(initialCards);
   const [choiceOne, setChoiceOne] = useState<CardType | null>(null);
   const [choiceTwo, setChoiceTwo] = useState<CardType | null>(null);
+  const [turns, setTurns] = useState<number>(0);
 
   const shuffleCards = () => {
     const shuffledCards = [...initialCards].sort(() => Math.random() - 0.5);
     setCards(shuffledCards);
+    setTurns(0);
   };
 
   const handleChoice = (card: CardType) => {
@@ -40,12 +42,41 @@ const App = () => {
     }
   };
 
-  console.log(choiceOne, choiceTwo);
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      if (choiceOne.src === choiceTwo.src) {
+        setCards((prev) => {
+          return prev.map((card) => {
+            if (card.src === choiceTwo.src) {
+              return { ...card, isMatched: true };
+            } else {
+              return card;
+            }
+          });
+        });
+        resetTurn();
+      } else {
+        setTimeout(() => {
+          resetTurn();
+        }, 1000);
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+
+  console.log('gdfgdf', choiceOne, choiceTwo);
+  console.log(cards);
+
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns((prev) => prev + 1);
+  };
 
   return (
     <div className="App">
       <h1>Memory Game</h1>
       <button onClick={shuffleCards}>New game</button>
+      <p>Turns: {turns}</p>
       <div className="game-board">
         {cards.map((card) => (
           <Card card={card} key={card.id} handleChoice={handleChoice} />
