@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './components/Card/Card.scss';
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface CardType {
+  src: string;
+  isMatched: boolean;
+  id: string;
 }
 
-export default App
+const initialCards: CardType[] = [
+  { src: '/img/html.png', isMatched: false, id: 'htmlId1' },
+  { src: '/img/html.png', isMatched: false, id: 'htmlId2' },
+  { src: '/img/css.png', isMatched: false, id: 'cssId1' },
+  { src: '/img/css.png', isMatched: false, id: 'cssId2' },
+  { src: '/img/vite.png', isMatched: false, id: 'viteId1' },
+  { src: '/img/vite.png', isMatched: false, id: 'viteId2' },
+  { src: '/img/node.png', isMatched: false, id: 'nodeId2' },
+  { src: '/img/node.png', isMatched: false, id: 'nodeId2' },
+  { src: '/img/react.png', isMatched: false, id: 'reactId2' },
+  { src: '/img/react.png', isMatched: false, id: 'reactId2' },
+  { src: '/img/sass.png', isMatched: false, id: 'sassId2' },
+  { src: '/img/sass.png', isMatched: false, id: 'sassId2' },
+  { src: '/img/tailwind.png', isMatched: false, id: 'tailwindId2' },
+  { src: '/img/tailwind.png', isMatched: false, id: 'tailwindId2' },
+  { src: '/img/ts.png', isMatched: false, id: 'tsId2' },
+  { src: '/img/ts.png', isMatched: false, id: 'tsId2' },
+];
+
+const App = () => {
+  const [cards, setCards] = useState<CardType[]>(initialCards);
+
+  const shuffleCards = () => {
+    const shuffleCards = initialCards.sort(() => Math.random() - 0.5);
+    setCards(shuffleCards);
+  };
+  console.log(cards);
+  return (
+    <div className="App">
+      <h1>Memory Game</h1>
+      <button onClick={shuffleCards}>New game</button>
+      <div className="game-board">
+        {cards.map((card) => (
+          <Card card={card} key={card.id} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default App;
