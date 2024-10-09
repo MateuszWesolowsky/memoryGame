@@ -1,0 +1,30 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #333131;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  color: azure;
+}
+.App {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+// .memory-game {
+//    display: flex;
+//    flex-direction: column;
+//    align-items: center;
+//    justify-content: center;
+//    height: 100vh;
+
+//    h1 {
+//       color: #333;
+//    }
+// }
+.game-board {
+  margin-top: 40px;
+  display: grid;
+  width: 80%;
+  grid-template-columns: repeat(4, 1fr); /* 4 kolumny kafelków */
+  gap: 20px;
+}
