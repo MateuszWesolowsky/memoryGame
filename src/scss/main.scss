@@ -1,30 +1,34 @@
+$primary-color: #333131;
+$text-color: azure;
+
 body {
-  font-family: "Arial", sans-serif;
-  background-color: #333131;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  color: azure;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #1a3e2c, #0c1a1b);
+
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: $text-color;
 }
 .App {
-  max-width: 1024px;
-  margin: 0 auto;
+    max-width: 1024px;
+    margin: 0 auto;
 }
-// .memory-game {
-//    display: flex;
-//    flex-direction: column;
-//    align-items: center;
-//    justify-content: center;
-//    height: 100vh;
-
-//    h1 {
-//       color: #333;
-//    }
-// }
 .game-board {
-  margin-top: 40px;
-  display: grid;
-  width: 80%;
-  grid-template-columns: repeat(4, 1fr); /* 4 kolumny kafelków */
-  gap: 20px;
+    display: grid;
+    margin: 0 auto;
+    margin-top: 40px;
+    width: 80%;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+@media screen and (max-width: 800px) {
+    .game-board {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media screen and (max-width: 500px) {
+    .game-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

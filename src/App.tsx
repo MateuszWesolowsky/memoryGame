@@ -2,6 +2,7 @@ import Card from './components/Card/Card';
 import { useEffect, useState } from 'react';
 import { CardType } from './types/types';
 import './scss/main.scss';
+import { useGameStore } from './store';
 
 const initialCards = [
     { src: '/img/html.png', isMatched: false, id: 'htmlId1' },
@@ -16,10 +17,6 @@ const initialCards = [
     { src: '/img/react.png', isMatched: false, id: 'reactId2' },
     { src: '/img/sass.png', isMatched: false, id: 'sassId1' },
     { src: '/img/sass.png', isMatched: false, id: 'sassId2' },
-    { src: '/img/tailwind.png', isMatched: false, id: 'tailwindId1' },
-    { src: '/img/tailwind.png', isMatched: false, id: 'tailwindId2' },
-    { src: '/img/ts.png', isMatched: false, id: 'tsId1' },
-    { src: '/img/ts.png', isMatched: false, id: 'tsId2' },
 ];
 
 const App = () => {
@@ -27,9 +24,10 @@ const App = () => {
     const [difficulty, setDifficulty] = useState<number>(1);
     const [choiceOne, setChoiceOne] = useState<CardType | null>(null);
     const [choiceTwo, setChoiceTwo] = useState<CardType | null>(null);
-    const [turns, setTurns] = useState<number>(0);
-    const [time, setTime] = useState<number>(0);
     const [running, setRunning] = useState<boolean>(false);
+
+    const { turnsCount, setTurnsCount } = useGameStore();
+    const { time, setTime } = useGameStore();
 
     const formatTime = (time: number): string => {
         let hours: number | string = Math.floor((time / 60 / 60) % 24);
@@ -47,13 +45,14 @@ const App = () => {
 
         if (running) {
             interval = setInterval(() => {
-                setTime((pre) => pre + 1);
+                setTime(time + 1);
             }, 1000);
         } else if (!running) {
+            // || matchedCard.length === cards.length
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [running]);
+    }, [running, time, setTime]);
 
     const handleSelectChange = (
         event: React.ChangeEvent<HTMLSelectElement>
@@ -64,18 +63,21 @@ const App = () => {
     const shuffleCards = () => {
         let cardsByDiff = [...initialCards].slice(0, 4);
         if (difficulty === 2) {
-            cardsByDiff = [...initialCards].slice(0, 6);
+            cardsByDiff = [...initialCards].slice(0, 8);
         } else if (difficulty === 3) {
             cardsByDiff = [...initialCards];
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
         setCards(shuffledCards);
-        setTurns(0);
+        setChoiceOne(null);
+        setChoiceTwo(null);
+        setTurnsCount(0);
         setTime(0);
         setRunning(false);
     };
 
     const handleChoice = (card: CardType) => {
+        console.log(card);
         setRunning(true);
         if (choiceOne) {
             setChoiceTwo(card);
@@ -84,13 +86,21 @@ const App = () => {
         }
     };
 
+    // const { matchedCards, setMatchedCards } = useGameStore();
+
     useEffect(() => {
         if (choiceOne && choiceTwo) {
             if (choiceOne.src === choiceTwo.src) {
                 setCards((prev) => {
                     return prev.map((card) => {
-                        if (card.src === choiceTwo.src) {
-                            return { ...card, isMatched: true };
+                        if (card.src === choiceOne.src) {
+                            const updatedCard = { ...card, isMatched: true };
+                            localStorage.setItem(
+                                'myDataKey',
+                                JSON.stringify(updatedCard)
+                            );
+                            // setMatchedCards([...matchedCards, updatedCard]);
+                            return updatedCard;
                         } else {
                             return card;
                         }
@@ -108,28 +118,29 @@ const App = () => {
     const resetTurn = () => {
         setChoiceOne(null);
         setChoiceTwo(null);
-        setTurns((prev) => prev + 1);
+        setTurnsCount(turnsCount + 1);
     };
 
+    // console.log(matchedCards);
+    console.log(time);
     return (
         <div className="App">
             <h1>Memory Game</h1>
+
+            <button onClick={shuffleCards}>New game</button>
+            <p>Turns: {turnsCount}</p>
+            <p>Time: {formatTime(time)}</p>
             <div>
-                <button onClick={shuffleCards}>New game</button>
-                <p>Turns: {turns}</p>
-                <p>Time: {formatTime(time)}</p>
-                <div>
-                    <label htmlFor="levles">Wybierz pozion trudności:</label>
-                    <select
-                        id="levles"
-                        value={difficulty}
-                        onChange={handleSelectChange}
-                    >
-                        <option value={1}>Łatwy</option>
-                        <option value={2}>Średni</option>
-                        <option value={3}>Trudny</option>
-                    </select>
-                </div>
+                <label htmlFor="levles">Wybierz pozion trudności:</label>
+                <select
+                    id="levles"
+                    value={difficulty}
+                    onChange={handleSelectChange}
+                >
+                    <option value={1}>Łatwy</option>
+                    <option value={2}>Średni</option>
+                    <option value={3}>Trudny</option>
+                </select>
             </div>
             <div className="game-board">
                 {cards.map((card) => (
@@ -137,6 +148,11 @@ const App = () => {
                         card={card}
                         key={card.id}
                         handleChoice={handleChoice}
+                        flipped={
+                            card === choiceOne ||
+                            card === choiceTwo ||
+                            card.isMatched
+                        }
                     />
                 ))}
             </div>

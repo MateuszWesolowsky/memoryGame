@@ -1,16 +1,42 @@
+$transition-duration: 0.2s;
+$transition-ease: ease-in;
+$border-radius: 5px;
+$border-color: gray;
+
 .card {
-  position: relative;
-}
+    position: relative;
 
-img {
-  width: 100%;
-  aspect-ratio: 1/1;
-  display: block;
-  border: 2px solid gray;
-  border-radius: 5px;
-  object-fit: cover;
-}
+    img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        display: block;
+        border: 2px solid $border-color;
+        border-radius: $border-radius;
+        object-fit: cover;
+    }
 
-.card .front {
-  // position: absolute;
+    .front,
+    .back {
+        transition: all $transition-ease $transition-duration;
+    }
+    .front {
+        transform: rotateY(90deg);
+        position: absolute;
+    }
+
+    .back {
+        transition-delay: $transition-duration;
+    }
+
+    [data-state='flipped'] {
+        .front {
+            transform: rotateY(0deg);
+            transition-delay: $transition-duration;
+        }
+
+        .back {
+            transform: rotateY(90deg);
+            transition-delay: $transition-duration;
+        }
+    }
 }
