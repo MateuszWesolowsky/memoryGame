@@ -1,69 +1,16 @@
 import Card from '../components/Card/Card';
-import { CardType } from '../types/types';
+import { CardType, LocalStorageTypes } from '../types/types';
 import { useEffect, useState } from 'react';
 import '../scss/main.scss';
 import { useGameStore } from '../store';
-
-const initialCards = [
-    {
-        src: '/img/html.png',
-        name: 'html_card',
-        id: 'htmlId1',
-    },
-    {
-        src: '/img/html.png',
-        name: 'html_card',
-        id: 'htmlId2',
-    },
-    { src: '/img/css.png', name: 'css_card', id: 'cssId1' },
-    { src: '/img/css.png', name: 'css_card', id: 'cssId2' },
-    {
-        src: '/img/vite.png',
-        name: 'vite_card',
-        id: 'viteId1',
-    },
-    {
-        src: '/img/vite.png',
-        name: 'vite_card',
-        id: 'viteId2',
-    },
-    {
-        src: '/img/node.png',
-        name: 'node_card',
-        id: 'nodeId1',
-    },
-    {
-        src: '/img/node.png',
-        name: 'node_card',
-        id: 'nodeId2',
-    },
-    {
-        src: '/img/react.png',
-        name: 'react_card',
-        id: 'reactId1',
-    },
-    {
-        src: '/img/react.png',
-        name: 'react_card',
-        id: 'reactId2',
-    },
-    {
-        src: '/img/sass.png',
-        name: 'sass_card',
-        id: 'sassId1',
-    },
-    {
-        src: '/img/sass.png',
-        name: 'sass_card',
-        id: 'sassId2',
-    },
-];
+import { data } from '../utils/data';
 
 const GameBoardView = () => {
     const [difficulty, setDifficulty] = useState<number>(1);
     const [running, setRunning] = useState<boolean>(false);
     const [shuffledCards, setShufledCards] = useState<CardType[]>([]);
     const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
+    const [isResultSaved, setIsResultSaved] = useState(false);
     const {
         time,
         setTime,
@@ -72,8 +19,6 @@ const GameBoardView = () => {
         matchedCardsId,
         setMatchedCardsId,
     } = useGameStore();
-
-    console.log(matchedCardsId);
 
     const formatTime = (time: number): string => {
         let hours: number | string = Math.floor((time / 60 / 60) % 24);
@@ -106,6 +51,7 @@ const GameBoardView = () => {
     };
 
     const shuffleCards = () => {
+        const initialCards = data;
         let cardsByDiff = [...initialCards].slice(0, 4);
         if (difficulty === 2) {
             cardsByDiff = [...initialCards].slice(0, 8);
@@ -118,6 +64,7 @@ const GameBoardView = () => {
         setTurnsCount(0);
         setTime(0);
         setRunning(false);
+        setIsResultSaved(false);
     };
 
     const handleChoice = (id: string) => {
@@ -130,7 +77,7 @@ const GameBoardView = () => {
             setFlippedCardsIds([id]);
             return;
         }
-
+        //add flipped cards to zustand store i dodac local storage
         setFlippedCardsIds((prevFlippedCards) => [...prevFlippedCards, id]);
 
         const firstCardName = shuffledCards.find(
@@ -144,17 +91,33 @@ const GameBoardView = () => {
             setMatchedCardsId(flippedCardsIds[0]);
             setMatchedCardsId(id);
         }
-
+        setTurnsCount(turnsCount + 1);
         setTimeout(() => {
-            setTurnsCount(turnsCount + 1);
             setFlippedCardsIds([]);
         }, 500);
     };
-    useEffect(() => {
-        if (matchedCardsId.length === shuffledCards.length) {
-            setRunning(false);
+
+    const addItemsToLocalStorage = (newItem: LocalStorageTypes) => {
+        const existingData = localStorage.getItem('gameHistory');
+        let dataList = [];
+        if (existingData) {
+            dataList = JSON.parse(existingData);
         }
-    }, [matchedCardsId, shuffledCards]);
+        dataList.push(newItem);
+        localStorage.setItem('gameHistory', JSON.stringify(dataList));
+    };
+
+    useEffect(() => {
+        if (matchedCardsId.length === shuffledCards.length && isResultSaved) {
+            setRunning(false);
+            addItemsToLocalStorage({
+                time: time,
+                turns: turnsCount,
+                date: new Date().toISOString(),
+            });
+        }
+        setIsResultSaved(true);
+    }, [matchedCardsId, shuffledCards, isResultSaved]);
 
     useEffect(() => {
         shuffleCards();
