@@ -63,9 +63,17 @@ const GameBoardView = () => {
     const [difficulty, setDifficulty] = useState<number>(1);
     const [running, setRunning] = useState<boolean>(false);
     const [shuffledCards, setShufledCards] = useState<CardType[]>([]);
-    const [matchedCardsIds, setMatchedCardsIds] = useState<string[]>([]);
     const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
-    const { time, setTime, turnsCount, setTurnsCount } = useGameStore();
+    const {
+        time,
+        setTime,
+        turnsCount,
+        setTurnsCount,
+        matchedCardsId,
+        setMatchedCardsId,
+    } = useGameStore();
+
+    console.log(matchedCardsId);
 
     const formatTime = (time: number): string => {
         let hours: number | string = Math.floor((time / 60 / 60) % 24);
@@ -80,13 +88,12 @@ const GameBoardView = () => {
 
     useEffect(() => {
         let interval: NodeJS.Timeout | undefined;
-
         if (running) {
             interval = setInterval(() => {
                 setTime(time + 1);
             }, 1000);
-        } else if (!running) {
-            // || matchedCard.length === cards.length
+        }
+        if (!running) {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
@@ -107,7 +114,7 @@ const GameBoardView = () => {
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
         setShufledCards(shuffledCards);
-        setMatchedCardsIds([]);
+        setMatchedCardsId([]);
         setTurnsCount(0);
         setTime(0);
         setRunning(false);
@@ -115,7 +122,7 @@ const GameBoardView = () => {
 
     const handleChoice = (id: string) => {
         setRunning(true);
-        if (matchedCardsIds.includes(id)) return;
+        if (matchedCardsId.includes(id)) return;
 
         if (flippedCardsIds.length === 2) return;
 
@@ -134,13 +141,20 @@ const GameBoardView = () => {
         )?.name;
 
         if (firstCardName === secondCardName) {
-            setMatchedCardsIds((prev) => [...prev, flippedCardsIds[0], id]);
+            setMatchedCardsId(flippedCardsIds[0]);
+            setMatchedCardsId(id);
         }
+
         setTimeout(() => {
             setTurnsCount(turnsCount + 1);
             setFlippedCardsIds([]);
         }, 500);
     };
+    useEffect(() => {
+        if (matchedCardsId.length === shuffledCards.length) {
+            setRunning(false);
+        }
+    }, [matchedCardsId, shuffledCards]);
 
     useEffect(() => {
         shuffleCards();
@@ -172,7 +186,7 @@ const GameBoardView = () => {
                         key={card.id}
                         handleChoice={() => handleChoice(card.id)}
                         flipped={
-                            matchedCardsIds.includes(card.id) ||
+                            matchedCardsId.includes(card.id) ||
                             flippedCardsIds.includes(card.id)
                         }
                     />
