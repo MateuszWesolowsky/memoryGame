@@ -5,29 +5,67 @@ import '../scss/main.scss';
 import { useGameStore } from '../store';
 
 const initialCards = [
-    { src: '/img/html.png', isMatched: false, id: 'htmlId1' },
-    { src: '/img/html.png', isMatched: false, id: 'htmlId2' },
-    { src: '/img/css.png', isMatched: false, id: 'cssId1' },
-    { src: '/img/css.png', isMatched: false, id: 'cssId2' },
-    { src: '/img/vite.png', isMatched: false, id: 'viteId1' },
-    { src: '/img/vite.png', isMatched: false, id: 'viteId2' },
-    { src: '/img/node.png', isMatched: false, id: 'nodeId1' },
-    { src: '/img/node.png', isMatched: false, id: 'nodeId2' },
-    { src: '/img/react.png', isMatched: false, id: 'reactId1' },
-    { src: '/img/react.png', isMatched: false, id: 'reactId2' },
-    { src: '/img/sass.png', isMatched: false, id: 'sassId1' },
-    { src: '/img/sass.png', isMatched: false, id: 'sassId2' },
+    {
+        src: '/img/html.png',
+        name: 'html_card',
+        id: 'htmlId1',
+    },
+    {
+        src: '/img/html.png',
+        name: 'html_card',
+        id: 'htmlId2',
+    },
+    { src: '/img/css.png', name: 'css_card', id: 'cssId1' },
+    { src: '/img/css.png', name: 'css_card', id: 'cssId2' },
+    {
+        src: '/img/vite.png',
+        name: 'vite_card',
+        id: 'viteId1',
+    },
+    {
+        src: '/img/vite.png',
+        name: 'vite_card',
+        id: 'viteId2',
+    },
+    {
+        src: '/img/node.png',
+        name: 'node_card',
+        id: 'nodeId1',
+    },
+    {
+        src: '/img/node.png',
+        name: 'node_card',
+        id: 'nodeId2',
+    },
+    {
+        src: '/img/react.png',
+        name: 'react_card',
+        id: 'reactId1',
+    },
+    {
+        src: '/img/react.png',
+        name: 'react_card',
+        id: 'reactId2',
+    },
+    {
+        src: '/img/sass.png',
+        name: 'sass_card',
+        id: 'sassId1',
+    },
+    {
+        src: '/img/sass.png',
+        name: 'sass_card',
+        id: 'sassId2',
+    },
 ];
 
 const GameBoardView = () => {
-    const [cards, setCards] = useState<CardType[]>([]);
     const [difficulty, setDifficulty] = useState<number>(1);
-    const [choiceOne, setChoiceOne] = useState<CardType | null>(null);
-    const [choiceTwo, setChoiceTwo] = useState<CardType | null>(null);
     const [running, setRunning] = useState<boolean>(false);
-
-    const { turnsCount, setTurnsCount } = useGameStore();
-    const { time, setTime } = useGameStore();
+    const [shuffledCards, setShufledCards] = useState<CardType[]>([]);
+    const [matchedCardsIds, setMatchedCardsIds] = useState<string[]>([]);
+    const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
+    const { time, setTime, turnsCount, setTurnsCount } = useGameStore();
 
     const formatTime = (time: number): string => {
         let hours: number | string = Math.floor((time / 60 / 60) % 24);
@@ -68,61 +106,46 @@ const GameBoardView = () => {
             cardsByDiff = [...initialCards];
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
-        setCards(shuffledCards);
-        setChoiceOne(null);
-        setChoiceTwo(null);
+        setShufledCards(shuffledCards);
+        setMatchedCardsIds([]);
         setTurnsCount(0);
         setTime(0);
         setRunning(false);
     };
 
-    const handleChoice = (card: CardType) => {
-        console.log(card);
+    const handleChoice = (id: string) => {
         setRunning(true);
-        if (choiceOne) {
-            setChoiceTwo(card);
-        } else {
-            setChoiceOne(card);
-        }
-    };
+        if (matchedCardsIds.includes(id)) return;
 
-    // const { matchedCards, setMatchedCards } = useGameStore();
+        if (flippedCardsIds.length === 2) return;
+
+        if (flippedCardsIds.length === 0) {
+            setFlippedCardsIds([id]);
+            return;
+        }
+
+        setFlippedCardsIds((prevFlippedCards) => [...prevFlippedCards, id]);
+
+        const firstCardName = shuffledCards.find(
+            (card) => card.id === flippedCardsIds[0]
+        )?.name;
+        const secondCardName = shuffledCards.find(
+            (card) => card.id === id
+        )?.name;
+
+        if (firstCardName === secondCardName) {
+            setMatchedCardsIds((prev) => [...prev, flippedCardsIds[0], id]);
+        }
+        setTimeout(() => {
+            setTurnsCount(turnsCount + 1);
+            setFlippedCardsIds([]);
+        }, 500);
+    };
 
     useEffect(() => {
-        if (choiceOne && choiceTwo) {
-            if (choiceOne.src === choiceTwo.src) {
-                setCards((prev) => {
-                    return prev.map((card) => {
-                        if (card.src === choiceOne.src) {
-                            const updatedCard = { ...card, isMatched: true };
-                            localStorage.setItem(
-                                'myDataKey',
-                                JSON.stringify(updatedCard)
-                            );
-                            // setMatchedCards([...matchedCards, updatedCard]);
-                            return updatedCard;
-                        } else {
-                            return card;
-                        }
-                    });
-                });
-                resetTurn();
-            } else {
-                setTimeout(() => {
-                    resetTurn();
-                }, 1000);
-            }
-        }
-    }, [choiceOne, choiceTwo]);
+        shuffleCards();
+    }, []);
 
-    const resetTurn = () => {
-        setChoiceOne(null);
-        setChoiceTwo(null);
-        setTurnsCount(turnsCount + 1);
-    };
-
-    // console.log(matchedCards);
-    console.log(time);
     return (
         <div>
             <h1>Memory Game</h1>
@@ -143,15 +166,14 @@ const GameBoardView = () => {
                 </select>
             </div>
             <div className="game-board">
-                {cards.map((card) => (
+                {shuffledCards.map((card) => (
                     <Card
                         card={card}
                         key={card.id}
-                        handleChoice={handleChoice}
+                        handleChoice={() => handleChoice(card.id)}
                         flipped={
-                            card === choiceOne ||
-                            card === choiceTwo ||
-                            card.isMatched
+                            matchedCardsIds.includes(card.id) ||
+                            flippedCardsIds.includes(card.id)
                         }
                     />
                 ))}
