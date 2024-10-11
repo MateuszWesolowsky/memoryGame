@@ -1,5 +1,5 @@
 export interface CardType {
     src: string;
-    isMatched: boolean;
+    name: string;
     id: string;
 }
