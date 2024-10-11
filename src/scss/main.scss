@@ -1,10 +1,11 @@
 $primary-color: #333131;
 $text-color: azure;
-
+html {
+    height: 100vh;
+    background: linear-gradient(to right, #4d9f76, #57a7ad);
+}
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #1a3e2c, #0c1a1b);
-
     text-align: center;
     margin: 0;
     padding: 0;
@@ -21,11 +22,6 @@ body {
     width: 80%;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-}
-@media screen and (max-width: 800px) {
-    .game-board {
-        grid-template-columns: repeat(3, 1fr);
-    }
 }
 @media screen and (max-width: 500px) {
     .game-board {
