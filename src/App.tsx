@@ -1,11 +1,8 @@
 import GameBoardView from './views/GameBoardView';
+import './scss/main.scss';
 
-const App = () => {
-    return (
-        <div className="App">
-            <GameBoardView />
-        </div>
-    );
-};
-
-export default App;
+export const App = () => (
+    <div className="App">
+        <GameBoardView />
+    </div>
+);

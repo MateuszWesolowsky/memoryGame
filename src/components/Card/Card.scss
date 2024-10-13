@@ -1,18 +1,24 @@
 $transition-duration: 0.2s;
 $transition-ease: ease-in;
-$border-radius: 5px;
+$border-radius: 10px;
 $border-color: gray;
 
 .card {
     position: relative;
+    overflow: hidden;
+    border: 2px solid #bfb076;
+    border-radius: 10%;
+    height: 100%;
+    width: 100%;
 
     img {
         width: 100%;
-        aspect-ratio: 1/1;
+        height: 100%;
         display: block;
-        border: 2px solid $border-color;
-        border-radius: $border-radius;
-        object-fit: cover;
+        object-fit: contain;
+    }
+    .back {
+        cursor: pointer;
     }
 
     .front,

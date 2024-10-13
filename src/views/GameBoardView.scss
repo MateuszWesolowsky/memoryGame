@@ -1,0 +1,14 @@
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0 auto;
+    align-items: center;
+    justify-items: center;
+    gap: 1em;
+    padding: 0 1em;
+}
+@media (max-width: 650px) {
+    .game-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
