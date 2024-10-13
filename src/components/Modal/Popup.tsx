@@ -6,7 +6,7 @@ interface PopupProps {
     children: React.ReactNode;
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
+export const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
 
     return (
@@ -20,5 +20,3 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
         </div>
     );
 };
-
-export default Popup;

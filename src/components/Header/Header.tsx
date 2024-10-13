@@ -1,4 +1,4 @@
-import Button from '../Button/Button';
+import { Button } from '../Button/Button';
 import './Header.scss';
 import { formatTime } from './Headers.helpers';
 interface HeaderProps {
@@ -6,10 +6,10 @@ interface HeaderProps {
     turnsCount: number;
     time: number;
     difficulty: number;
-    handleSelectChange: () => void;
+    handleSelectChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const Header = ({
+export const Header = ({
     shuffleCards,
     turnsCount,
     time,
@@ -38,5 +38,3 @@ const Header = ({
         </div>
     );
 };
-
-export default Header;

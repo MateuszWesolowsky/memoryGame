@@ -6,7 +6,7 @@ interface CardProps {
     handleChoice: (card: CardType) => void;
     flipped: boolean;
 }
-const Card = ({ card, handleChoice, flipped }: CardProps) => {
+export const Card = ({ card, handleChoice, flipped }: CardProps) => {
     const handleClick = () => {
         handleChoice(card);
     };
@@ -25,5 +25,3 @@ const Card = ({ card, handleChoice, flipped }: CardProps) => {
         </div>
     );
 };
-
-export default Card;
