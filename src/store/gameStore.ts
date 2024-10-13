@@ -3,12 +3,14 @@ import { GameStore } from './gameStore.types';
 
 export const useGameStore = create<GameStore>((set) => ({
     matchedCardsId: [],
+
     setMatchedCardsId: (id) =>
         set((state) => ({
             matchedCardsId: Array.isArray(id)
                 ? id
                 : [...state.matchedCardsId, id],
         })),
+
     flippedCardsIds: [],
     setFlippedCardsIds: (id) =>
         set((state) => ({
