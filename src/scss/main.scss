@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Roboto+Condensed:wght@300&family=Sixtyfour+Convergence&display=swap');
-
 @import './reset';
+@import './variables';
 
-$primary-color: linear-gradient(to right, #373a38, #696945);
 html {
     background: $primary-color;
     font-family: 'Sixtyfour Convergence', sans-serif;
 }
+
 .App {
     max-width: 1024px;
     margin: 0 auto;
