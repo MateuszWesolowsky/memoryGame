@@ -9,6 +9,13 @@ export const useGameStore = create<GameStore>((set) => ({
                 ? id
                 : [...state.matchedCardsId, id],
         })),
+    flippedCardsIds: [],
+    setFlippedCardsIds: (id) =>
+        set((state) => ({
+            flippedCardsIds: Array.isArray(id)
+                ? id
+                : [...state.flippedCardsIds, id],
+        })),
     turnsCount: 0,
     setTurnsCount: (turnsCount) => set({ turnsCount }),
     time: 0,

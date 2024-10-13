@@ -1,16 +1,19 @@
 import Card from '../components/Card/Card';
 import { CardType, LocalStorageTypes } from '../types/types';
 import { useEffect, useState } from 'react';
-import '../scss/main.scss';
+import './GameBoardView.scss';
 import { useGameStore } from '../store';
-import { data } from '../utils/data';
+import { data } from '../data/data';
+import Header from '../components/Header/Header';
+import Popup from '../components/Modal/Popup';
 
 const GameBoardView = () => {
     const [difficulty, setDifficulty] = useState<number>(1);
     const [running, setRunning] = useState<boolean>(false);
     const [shuffledCards, setShufledCards] = useState<CardType[]>([]);
-    const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
+    // const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
     const [isResultSaved, setIsResultSaved] = useState(false);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
     const {
         time,
         setTime,
@@ -18,18 +21,9 @@ const GameBoardView = () => {
         setTurnsCount,
         matchedCardsId,
         setMatchedCardsId,
+        flippedCardsIds,
+        setFlippedCardsIds,
     } = useGameStore();
-
-    const formatTime = (time: number): string => {
-        let hours: number | string = Math.floor((time / 60 / 60) % 24);
-        let minutes: number | string = Math.floor((time / 60) % 60);
-        let seconds: number | string = Math.floor(time % 60);
-        hours = hours < 10 ? '0' + hours : hours;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-
-        return `${hours}:${minutes}:${seconds}`;
-    };
 
     useEffect(() => {
         let interval: NodeJS.Timeout | undefined;
@@ -55,12 +49,11 @@ const GameBoardView = () => {
         let cardsByDiff = [...initialCards].slice(0, 4);
         if (difficulty === 2) {
             cardsByDiff = [...initialCards].slice(0, 8);
-        } else if (difficulty === 3) {
-            cardsByDiff = [...initialCards];
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
         setShufledCards(shuffledCards);
         setMatchedCardsId([]);
+        setFlippedCardsIds([]);
         setTurnsCount(0);
         setTime(0);
         setRunning(false);
@@ -77,8 +70,8 @@ const GameBoardView = () => {
             setFlippedCardsIds([id]);
             return;
         }
-        //add flipped cards to zustand store i dodac local storage
-        setFlippedCardsIds((prevFlippedCards) => [...prevFlippedCards, id]);
+
+        setFlippedCardsIds([id]);
 
         const firstCardName = shuffledCards.find(
             (card) => card.id === flippedCardsIds[0]
@@ -88,8 +81,7 @@ const GameBoardView = () => {
         )?.name;
 
         if (firstCardName === secondCardName) {
-            setMatchedCardsId(flippedCardsIds[0]);
-            setMatchedCardsId(id);
+            setMatchedCardsId([flippedCardsIds[0]]);
         }
         setTurnsCount(turnsCount + 1);
         setTimeout(() => {
@@ -115,33 +107,35 @@ const GameBoardView = () => {
                 turns: turnsCount,
                 date: new Date().toISOString(),
             });
+            setTimeout(() => {
+                setIsPopupOpen(true);
+            }, 1000);
         }
         setIsResultSaved(true);
     }, [matchedCardsId, shuffledCards, isResultSaved]);
+
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+    };
 
     useEffect(() => {
         shuffleCards();
     }, []);
 
     return (
-        <div>
-            <h1>Memory Game</h1>
-
-            <button onClick={shuffleCards}>New game</button>
-            <p>Turns: {turnsCount}</p>
-            <p>Time: {formatTime(time)}</p>
-            <div>
-                <label htmlFor="levles">Wybierz pozion trudności:</label>
-                <select
-                    id="levles"
-                    value={difficulty}
-                    onChange={handleSelectChange}
-                >
-                    <option value={1}>Łatwy</option>
-                    <option value={2}>Średni</option>
-                    <option value={3}>Trudny</option>
-                </select>
-            </div>
+        <>
+            <Header
+                handleSelectChange={handleSelectChange}
+                difficulty={difficulty}
+                time={time}
+                turnsCount={turnsCount}
+                shuffleCards={shuffleCards}
+            />
+            <Popup isOpen={isPopupOpen} onClose={handleClosePopup}>
+                <h2>You won !</h2>
+                <p>Time: {time}</p>
+                <p>Turns: {turnsCount}</p>
+            </Popup>
             <div className="game-board">
                 {shuffledCards.map((card) => (
                     <Card
@@ -155,7 +149,7 @@ const GameBoardView = () => {
                     />
                 ))}
             </div>
-        </div>
+        </>
     );
 };
 
