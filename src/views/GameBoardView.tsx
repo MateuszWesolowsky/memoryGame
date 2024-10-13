@@ -46,11 +46,13 @@ export const GameBoardView = () => {
 
     const shuffleCards = () => {
         const initialCards = data;
+
         let cardsByDiff = [...initialCards].slice(0, 4);
         if (difficulty === 2) {
             cardsByDiff = [...initialCards].slice(0, 8);
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
+
         setShufledCards(shuffledCards);
         setMatchedCardsIds([]);
         setFlippedCardsIds([]);
@@ -73,6 +75,7 @@ export const GameBoardView = () => {
         const firstCardName = shuffledCards.find(
             (card) => card.id === flippedCardsIds[0]
         )?.name;
+
         const secondCardName = shuffledCards.find(
             (card) => card.id === id
         )?.name;
@@ -82,6 +85,7 @@ export const GameBoardView = () => {
         }
 
         setTurnsCount(turnsCount + 1);
+
         setTimeout(() => {
             setFlippedCardsIds([]);
         }, 500);
@@ -90,25 +94,30 @@ export const GameBoardView = () => {
     const addItemsToLocalStorage = (newItem: LocalStorageTypes) => {
         const existingData = localStorage.getItem('gameHistory');
         let dataList = [];
+
         if (existingData) {
             dataList = JSON.parse(existingData);
         }
         dataList.push(newItem);
+
         localStorage.setItem('gameHistory', JSON.stringify(dataList));
     };
 
     useEffect(() => {
         if (matchedCardsIds.length === shuffledCards.length && isResultSaved) {
             setRunning(false);
+
             addItemsToLocalStorage({
                 time: time,
                 turns: turnsCount,
                 date: new Date().toISOString(),
             });
+
             setTimeout(() => {
                 setIsPopupOpen(true);
             }, 1000);
         }
+
         setIsResultSaved(true);
     }, [matchedCardsIds, shuffledCards, isResultSaved]);
 
