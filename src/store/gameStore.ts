@@ -2,22 +2,10 @@ import { create } from 'zustand';
 import { GameStore } from './gameStore.types';
 
 export const useGameStore = create<GameStore>((set) => ({
-    matchedCardsId: [],
-
-    setMatchedCardsId: (id) =>
-        set((state) => ({
-            matchedCardsId: Array.isArray(id)
-                ? id
-                : [...state.matchedCardsId, id],
-        })),
-
+    matchedCardsIds: [],
     flippedCardsIds: [],
-    setFlippedCardsIds: (id) =>
-        set((state) => ({
-            flippedCardsIds: Array.isArray(id)
-                ? id
-                : [...state.flippedCardsIds, id],
-        })),
+    setMatchedCardsIds: (newIds) => set({ matchedCardsIds: newIds }),
+    setFlippedCardsIds: (newIds) => set({ flippedCardsIds: newIds }),
     turnsCount: 0,
     setTurnsCount: (turnsCount) => set({ turnsCount }),
     time: 0,

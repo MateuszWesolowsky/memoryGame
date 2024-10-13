@@ -1,17 +1,16 @@
-import Card from '../components/Card/Card';
+import './GameBoardView.scss';
 import { CardType, LocalStorageTypes } from '../types/types';
 import { useEffect, useState } from 'react';
-import './GameBoardView.scss';
 import { useGameStore } from '../store';
 import { data } from '../data/data';
-import Header from '../components/Header/Header';
-import Popup from '../components/Modal/Popup';
+import { Card } from '../components/Card/Card';
+import { Popup } from '../components/Modal/Popup';
+import { Header } from '../components/Header/Header';
 
-const GameBoardView = () => {
+export const GameBoardView = () => {
     const [difficulty, setDifficulty] = useState<number>(1);
     const [running, setRunning] = useState<boolean>(false);
     const [shuffledCards, setShufledCards] = useState<CardType[]>([]);
-    // const [flippedCardsIds, setFlippedCardsIds] = useState<string[]>([]);
     const [isResultSaved, setIsResultSaved] = useState(false);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const {
@@ -19,8 +18,8 @@ const GameBoardView = () => {
         setTime,
         turnsCount,
         setTurnsCount,
-        matchedCardsId,
-        setMatchedCardsId,
+        matchedCardsIds,
+        setMatchedCardsIds,
         flippedCardsIds,
         setFlippedCardsIds,
     } = useGameStore();
@@ -35,6 +34,7 @@ const GameBoardView = () => {
         if (!running) {
             clearInterval(interval);
         }
+
         return () => clearInterval(interval);
     }, [running, time, setTime]);
 
@@ -52,7 +52,7 @@ const GameBoardView = () => {
         }
         const shuffledCards = [...cardsByDiff].sort(() => Math.random() - 0.5);
         setShufledCards(shuffledCards);
-        setMatchedCardsId([]);
+        setMatchedCardsIds([]);
         setFlippedCardsIds([]);
         setTurnsCount(0);
         setTime(0);
@@ -62,16 +62,13 @@ const GameBoardView = () => {
 
     const handleChoice = (id: string) => {
         setRunning(true);
-        if (matchedCardsId.includes(id)) return;
-
         if (flippedCardsIds.length === 2) return;
-
         if (flippedCardsIds.length === 0) {
             setFlippedCardsIds([id]);
             return;
         }
 
-        setFlippedCardsIds([id]);
+        setFlippedCardsIds([...flippedCardsIds, id]);
 
         const firstCardName = shuffledCards.find(
             (card) => card.id === flippedCardsIds[0]
@@ -81,8 +78,9 @@ const GameBoardView = () => {
         )?.name;
 
         if (firstCardName === secondCardName) {
-            setMatchedCardsId([flippedCardsIds[0]]);
+            setMatchedCardsIds([...matchedCardsIds, flippedCardsIds[0], id]);
         }
+
         setTurnsCount(turnsCount + 1);
         setTimeout(() => {
             setFlippedCardsIds([]);
@@ -100,7 +98,7 @@ const GameBoardView = () => {
     };
 
     useEffect(() => {
-        if (matchedCardsId.length === shuffledCards.length && isResultSaved) {
+        if (matchedCardsIds.length === shuffledCards.length && isResultSaved) {
             setRunning(false);
             addItemsToLocalStorage({
                 time: time,
@@ -112,7 +110,7 @@ const GameBoardView = () => {
             }, 1000);
         }
         setIsResultSaved(true);
-    }, [matchedCardsId, shuffledCards, isResultSaved]);
+    }, [matchedCardsIds, shuffledCards, isResultSaved]);
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
@@ -143,7 +141,7 @@ const GameBoardView = () => {
                         key={card.id}
                         handleChoice={() => handleChoice(card.id)}
                         flipped={
-                            matchedCardsId.includes(card.id) ||
+                            matchedCardsIds.includes(card.id) ||
                             flippedCardsIds.includes(card.id)
                         }
                     />
@@ -152,5 +150,3 @@ const GameBoardView = () => {
         </>
     );
 };
-
-export default GameBoardView;

@@ -1,6 +1,6 @@
 export type GameStore = {
-    matchedCardsId: string[];
-    setMatchedCardsId: (newId: string[]) => void;
+    matchedCardsIds: string[];
+    setMatchedCardsIds: (newId: string[]) => void;
     flippedCardsIds: string[];
     setFlippedCardsIds: (newId: string[]) => void;
     turnsCount: number;
